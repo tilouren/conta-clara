@@ -17,7 +17,8 @@ jobs:
       - name: Preparar site estático
         run: |
           mkdir -p dist/vendor
-          cp index.html app.js styles.css statement-import.js market-quotes.js manifest.webmanifest icon.svg service-worker.js dist/
+          cp index.html app.js styles.css statement-import.js market-quotes.js manifest.webmanifest icon.svg dist/
+          sed "s|const CACHE_NAME = .*|const CACHE_NAME = \"conta-clara-app-${GITHUB_SHA}\";|" service-worker.js > dist/service-worker.js
           cp -R vendor/. dist/vendor/
           touch dist/.nojekyll
       - name: Carregar artefacto GitHub Pages
