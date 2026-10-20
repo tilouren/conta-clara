@@ -40,7 +40,7 @@ Os ficheiros PDF.js principais são incluídos na preparação offline. Recursos
 
 O site contém apenas os ficheiros da aplicação, não os movimentos guardados pelo navegador. O repositório é público; não coloques nele extratos, cópias de segurança ou dados pessoais. Cada envio para `main` atualiza o site através de GitHub Actions e assinala a nova versão da PWA.
 
-Para instalar no iPhone, abre `https://tilouren.github.io/conta-clara/` no Safari com ligação à Internet, aguarda que o rodapé confirme que a app está preparada para utilização sem ligação e usa **Partilhar → Adicionar ao ecrã principal**. A primeira visita e a atualização para novas versões precisam do site acessível; depois da cache inicial, a interface e os registos locais funcionam sem computador. Neste alojamento estático, a atualização online de cotações não está disponível; para cotações, usa a aplicação no servidor local.
+Para instalar no iPhone, abre `https://tilouren.github.io/conta-clara/` no Safari com ligação à Internet, aguarda que o rodapé confirme que a app está preparada para utilização sem ligação e usa **Partilhar → Adicionar ao ecrã principal**. A primeira visita e a atualização para novas versões precisam do site acessível; depois da cache inicial, a interface e os registos locais funcionam sem computador. Os dados de outro endereço, como o servidor local, não são transferidos automaticamente: exporta uma cópia na app antiga e importa-a nesta. Neste alojamento estático, a atualização online de cotações não está disponível; para cotações, usa a aplicação no servidor local.
 
 ### Atualizar a app depois de alterar ficheiros
 
