@@ -1,0 +1,19 @@
+{
+  "name": "Conta Clara — Gestão financeira pessoal",
+  "short_name": "Conta Clara",
+  "description": "Gestão financeira pessoal privada, com dados guardados no dispositivo.",
+  "lang": "pt-PT",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7f4",
+  "theme_color": "#f5f7f4",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="pt-PT" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f4">
+    <meta name="description" content="Uma forma simples e privada de acompanhar rendimentos, despesas, créditos e investimentos.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Conta Clara">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Conta Clara — Gestão financeira pessoal</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script src="statement-import.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="#" aria-label="Conta Clara, início">
+          <span class="brand-mark" aria-hidden="true">€</span>
+          <span>conta<span class="brand-light">clara</span></span>
+        </a>
+
+        <div class="sidebar-caption">O SEU ESPAÇO</div>
+        <a class="nav-link active" href="#resumo" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">◫</span> Resumo
+        </a>
+        <a class="nav-link" href="#movimentos">
+          <span class="nav-icon" aria-hidden="true">↕</span> Movimentos
+        </a>
+        <a class="nav-link" href="#carteiras">
+          <span class="nav-icon" aria-hidden="true">◈</span> Carteiras
+        </a>
+        <button class="nav-link nav-button" id="sidebar-add" type="button">
+          <span class="nav-icon" aria-hidden="true">＋</span> Novo movimento
+        </button>
+
+        <div class="sidebar-bottom">
+          <div class="privacy-card">
+            <span class="privacy-icon" aria-hidden="true">◉</span>
+            <strong>Os seus dados ficam consigo</strong>
+            <p>Guardados apenas neste navegador. Exporte uma cópia de segurança quando quiser.</p>
+          </div>
+          <span class="sidebar-version">Gestão pessoal · v1.0</span>
+        </div>
+      </aside>
+
+      <nav class="mobile-nav" aria-label="Navegação rápida">
+        <a href="#resumo" aria-current="page"><span aria-hidden="true">◫</span><span>Resumo</span></a>
+        <a href="#movimentos"><span aria-hidden="true">↕</span><span>Movimentos</span></a>
+        <a href="#carteiras"><span aria-hidden="true">◈</span><span>Carteiras</span></a>
+      </nav>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="mobile-brand brand">
+            <span class="brand-mark" aria-hidden="true">€</span>
+            <span>conta<span class="brand-light">clara</span></span>
+          </div>
+          <div class="topbar-right">
+            <button class="button button-theme" id="theme-toggle" type="button" aria-label="Mudar para modo escuro">
+              <span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Modo escuro</span>
+            </button>
+            <label class="month-picker">
+              <span class="sr-only">Mês a consultar</span>
+              <span class="calendar-icon" aria-hidden="true">▦</span>
+              <input id="month-picker" type="month">
+            </label>
+            <button class="button button-primary top-add" id="top-add" type="button">
+              <span aria-hidden="true">＋</span> Novo movimento
+            </button>
+          </div>
+        </header>
+
+        <div class="page-content">
+          <section id="resumo" aria-labelledby="welcome-title">
+            <div class="welcome-row">
+              <div>
+                <p class="eyebrow">O SEU DINHEIRO, MAIS CLARO</p>
+                <h1 id="welcome-title">Resumo financeiro</h1>
+                <p class="welcome-subtitle" id="month-heading">Aqui está o ponto de situação deste mês.</p>
+              </div>
+              <span class="month-pill" id="month-pill"></span>
+            </div>
+
+            <div class="summary-grid" aria-label="Resumo do mês">
+              <article class="summary-card balance-card">
+                <div class="card-label"><span>Saldo disponível</span><span class="metric-icon balance-icon" aria-hidden="true">€</span></div>
+                <p class="metric-value" id="balance-total">0,00 €</p>
+                <p class="metric-caption">Rendimentos menos todas as saídas</p>
+              </article>
+              <article class="summary-card">
+                <div class="card-label"><span>Rendimentos</span><span class="metric-icon income-icon" aria-hidden="true">↗</span></div>
+                <p class="metric-value" id="income-total">0,00 €</p>
+                <p class="metric-caption">Salário e outras fontes</p>
+              </article>
+              <article class="summary-card">
+                <div class="card-label"><span>Despesas correntes</span><span class="metric-icon expense-icon" aria-hidden="true">↘</span></div>
+                <p class="metric-value" id="expense-total">0,00 €</p>
+                <p class="metric-caption">Despesas fixas e variáveis</p>
+              </article>
+              <article class="summary-card">
+                <div class="card-label"><span>Créditos</span><span class="metric-icon credit-icon" aria-hidden="true">⌁</span></div>
+                <p class="metric-value" id="credit-total">0,00 €</p>
+                <p class="metric-caption">Prestações e pagamentos</p>
+              </article>
+              <article class="summary-card">
+                <div class="card-label"><span>Investimentos</span><span class="metric-icon investment-icon" aria-hidden="true">◈</span></div>
+                <p class="metric-value" id="investment-total">0,00 €</p>
+                <p class="metric-caption">Poupança e aplicações</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="insights-grid" aria-label="Indicadores do mês">
+            <article class="panel flow-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Entradas e saídas</h2>
+                  <p>Comparação dos movimentos deste mês</p>
+                </div>
+                <span class="heading-mark" aria-hidden="true">⌁</span>
+              </div>
+              <div class="flow-legend">
+                <span><i class="legend-dot dot-income"></i> Entradas</span>
+                <span><i class="legend-dot dot-outflow"></i> Saídas totais</span>
+              </div>
+              <div class="flow-chart" id="flow-chart" aria-label="Comparação entre entradas e saídas"></div>
+              <p class="chart-footnote">As saídas incluem despesas, créditos e investimentos.</p>
+            </article>
+
+            <article class="panel categories-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Despesas por tema</h2>
+                  <p>Resumo do mês por tipo de despesa</p>
+                </div>
+                <span class="heading-mark category-mark" aria-hidden="true">▤</span>
+              </div>
+              <div id="category-breakdown" class="category-breakdown"></div>
+              <button class="button button-secondary expense-details-button" id="show-expense-details" type="button">Ver despesas por tema</button>
+              <div class="expense-analysis-tools">
+                <button class="button button-secondary" id="analyze-expenses" type="button">Analisar histórico e poupança</button>
+                <span>Orientações locais baseadas nos últimos seis meses</span>
+              </div>
+              <div id="expense-guidance" class="expense-guidance" aria-live="polite" hidden></div>
+            </article>
+          </section>
+
+          <section class="panel portfolios-panel" id="carteiras" aria-labelledby="portfolios-title">
+            <div class="portfolio-header">
+              <div>
+                <p class="eyebrow">INVESTIMENTOS FORA DO EXTRATO</p>
+                <h2 id="portfolios-title">Carteiras e posições</h2>
+                <p class="section-description">Acompanhe ETFs, cripto, ações e outras posições em qualquer carteira.</p>
+              </div>
+              <div class="portfolio-header-actions">
+                <button class="button button-secondary" id="refresh-quotes" type="button"><span aria-hidden="true">↻</span> Atualizar cotações</button>
+                <button class="button button-primary" id="add-wallet" type="button"><span aria-hidden="true">＋</span> Nova carteira</button>
+              </div>
+            </div>
+            <p class="portfolio-privacy">Pode atualizar a pedido ações e ETFs com símbolo Yahoo Finance e BTC, ETH, BNB, XRP, SOL, DOGE, ADA, TRX, AVAX e LINK. São valores indicativos, sujeitos ao atraso dos fornecedores e à taxa de câmbio diária. Só os símbolos são enviados aos serviços públicos de cotações; movimentos, unidades e valores das suas carteiras permanecem neste dispositivo.</p>
+            <p class="quote-status" id="quote-status" role="status" aria-live="polite">As cotações ainda não foram atualizadas online.</p>
+            <div id="wallet-list" class="wallet-list"></div>
+            <div class="portfolio-totals" aria-label="Resumo da carteira">
+              <article class="portfolio-total-card">
+                <span>Valor atual</span><strong id="portfolio-market-total">0,00 €</strong>
+              </article>
+              <article class="portfolio-total-card">
+                <span>Capital investido</span><strong id="portfolio-cost-total">0,00 €</strong>
+              </article>
+              <article class="portfolio-total-card">
+                <span>Variação potencial</span><strong id="portfolio-change-total">0,00 €</strong>
+              </article>
+            </div>
+            <div class="portfolio-table-wrap">
+              <table class="portfolio-table">
+                <thead><tr>
+                  <th scope="col">Ativo</th><th scope="col">Tipo</th><th scope="col">Carteira</th>
+                  <th scope="col" class="amount-heading">Unidades</th><th scope="col" class="amount-heading">Cotação atual</th>
+                  <th scope="col" class="amount-heading">Valor atual</th><th scope="col" class="amount-heading">Variação</th>
+                  <th scope="col"><span class="sr-only">Ações</span></th>
+                </tr></thead>
+                <tbody id="position-list"></tbody>
+              </table>
+              <div id="portfolio-empty" class="portfolio-empty">
+                <span class="empty-icon" aria-hidden="true">◈</span>
+                <strong>As suas posições começam aqui</strong>
+                <p>Crie uma carteira e registe os símbolos dos seus ativos. Pode atualizar as cotações suportadas quando quiser.</p>
+                <button class="button button-secondary" id="portfolio-empty-add" type="button">Criar carteira</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel movements-panel" id="movimentos" aria-labelledby="movements-title">
+            <div class="movements-header">
+              <div>
+                <h2 id="movements-title">Movimentos</h2>
+                <p id="movement-count">Os seus registos para este mês</p>
+              </div>
+              <div class="movement-tools">
+                <label class="search-box">
+                  <span aria-hidden="true">⌕</span>
+                  <span class="sr-only">Pesquisar movimentos</span>
+                  <input id="movement-search" type="search" placeholder="Pesquisar..." autocomplete="off">
+                </label>
+                <button class="button button-secondary import-statement-button" id="import-statement" type="button"><span aria-hidden="true">↑</span> Importar extrato</button>
+                <input id="statement-file" type="file" accept=".pdf,.csv,.ofx,.qfx,.qif,application/pdf,text/csv,application/x-ofx,application/qif" hidden>
+              </div>
+            </div>
+            <p class="statement-privacy-note">PDF pesquisável, CSV, OFX/QFX e QIF · analisado neste dispositivo · a importação nunca é automática.</p>
+            <p class="statement-import-error" id="statement-import-error" role="alert" tabindex="-1" hidden></p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Movimento</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col" class="amount-heading">Montante</th>
+                    <th scope="col"><span class="sr-only">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody id="movement-list"></tbody>
+              </table>
+              <div id="empty-state" class="empty-state">
+                <span class="empty-icon" aria-hidden="true">✳</span>
+                <strong>Ainda não há movimentos</strong>
+                <p>Comece por registar um rendimento, uma despesa, um crédito ou um investimento.</p>
+                <button class="button button-secondary" id="empty-add" type="button">Adicionar movimento</button>
+              </div>
+              <p id="no-results" class="no-results" hidden>Não foram encontrados movimentos para esta pesquisa.</p>
+            </div>
+          </section>
+
+          <footer class="page-footer">
+            <div class="footer-local-status">
+              <div><span class="footer-dot"></span> Dados guardados localmente neste navegador</div>
+              <p id="offline-status" class="offline-status" role="status" aria-live="polite">A verificar disponibilidade offline…</p>
+            </div>
+            <div class="backup-actions">
+              <button id="export-backup" class="text-button" type="button">↓ Exportar cópia</button>
+              <span class="footer-separator">·</span>
+              <button id="import-backup" class="text-button" type="button">↑ Importar cópia</button>
+              <input id="backup-file" type="file" accept=".json,application/json" hidden>
+            </div>
+          </footer>
+
+          <details class="help-disclosure">
+            <summary>Ajuda, acessibilidade e privacidade</summary>
+            <p>Os fluxos aplicam as dez heurísticas de usabilidade de Nielsen:</p>
+            <ol class="heuristics-list">
+              <li><strong>Estado visível:</strong> totais, mês, cotações, notificações e progresso da análise são identificados.</li>
+              <li><strong>Correspondência com o mundo real:</strong> terminologia e formatos em português de Portugal, datas familiares e montantes em euros.</li>
+              <li><strong>Controlo e liberdade:</strong> pesquisa e filtros são reversíveis; cancelar a análise ou a revisão não guarda movimentos.</li>
+              <li><strong>Consistência:</strong> carteiras, movimentos, formulários e ações de edição seguem os mesmos padrões.</li>
+              <li><strong>Prevenção de erros:</strong> validação de campos, deteção de duplicados e confirmação explícita antes de importar ou apagar.</li>
+              <li><strong>Reconhecimento em vez de memorização:</strong> categorias, sugestões, formatos suportados e indicadores ficam visíveis no contexto.</li>
+              <li><strong>Flexibilidade e eficiência:</strong> ações rápidas, pesquisa, pesquisa por mês, edição e interface adaptável a telemóvel.</li>
+              <li><strong>Design minimalista:</strong> o resumo destaca os indicadores relevantes sem dados de exemplo.</li>
+              <li><strong>Recuperação de erros:</strong> mensagens explicam o problema e a ação corretiva; as cópias permitem recuperar os dados.</li>
+              <li><strong>Ajuda e documentação:</strong> formatos, confidencialidade, limitações de OCR e cotações estão explicados nesta secção.</li>
+            </ol>
+            <p>PDF pesquisável, CSV, OFX/QFX e QIF são analisados no próprio dispositivo. A interface fica disponível sem ligação depois de instalada por HTTPS; as cotações exigem Internet. Nenhum extrato, carteira, quantidade, saldo ou movimento é enviado para um serviço externo. Ao pedir uma atualização de cotações, são enviados apenas os símbolos dos ativos aos fornecedores indicados na secção de carteiras. PDFs digitalizados como imagem não têm OCR; use um extrato com texto, CSV ou OFX. Faça cópias de segurança regularmente.</p>
+            <p>As despesas são agrupadas por tema, como contas da casa, supermercado, transportes, levantamentos, saúde e subscrições. A análise opcional compara até seis meses dos seus registos e apresenta cenários indicativos de poupança, sem enviar dados nem substituir aconselhamento financeiro.</p>
+            <p>As quantidades e preços de compra são introduzidos manualmente; as cotações online são indicativas, sujeitas a atraso e não representam uma ligação a bancos ou corretoras. Teclado, leitores de ecrã, pesquisa, modo claro/escuro, mensagens de erro claras e reversibilidade das ações dão prioridade a uma utilização acessível e previsível.</p>
+          </details>
+        </div>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="update-notice" class="update-notice" role="status" aria-live="polite" hidden>
+      <span>Está disponível uma versão mais recente da Conta Clara.</span>
+      <div class="update-notice-actions">
+        <button class="button button-primary" id="reload-updated-app" type="button">Atualizar agora</button>
+        <button class="button button-secondary" id="dismiss-update-notice" type="button">Agora não</button>
+      </div>
+    </div>
+
+    <dialog id="movement-dialog" class="movement-dialog">
+      <form id="movement-form" novalidate>
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">REGISTO FINANCEIRO</p>
+            <h2 id="dialog-title">Novo movimento</h2>
+          </div>
+          <button class="icon-button" id="close-dialog" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div class="dialog-fields">
+          <label class="field">
+            <span>Tipo de movimento</span>
+            <select id="kind-field" name="kind" required>
+              <option value="income">Rendimento</option>
+              <option value="expense">Despesa corrente</option>
+              <option value="credit">Crédito / prestação</option>
+              <option value="investment">Investimento</option>
+            </select>
+          </label>
+          <label class="field">
+            <span id="category-label">Origem do rendimento</span>
+            <select id="category-field" name="category" required></select>
+          </label>
+          <label class="field">
+            <span>Descrição</span>
+            <input id="description-field" name="description" type="text" maxlength="120" placeholder="Ex.: salário mensal" required>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span>Montante (€)</span>
+              <input id="amount-field" name="amount" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal" placeholder="0,00" required>
+            </label>
+            <label class="field">
+              <span>Data</span>
+              <input id="date-field" name="date" type="date" required>
+            </label>
+          </div>
+          <label class="field">
+            <span>Periodicidade</span>
+            <span class="recurrence-control">
+              <input id="recurring-field" name="recurring" type="checkbox">
+              <span>Repetir todos os meses</span>
+            </span>
+          </label>
+          <p class="recurrence-hint">Os movimentos recorrentes serão incluídos nos meses seguintes até os editar ou apagar.</p>
+        </div>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="cancel-dialog" type="button">Cancelar</button>
+          <button class="button button-primary" id="save-movement" type="submit">Guardar movimento</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="expense-details-dialog" class="expense-details-dialog" aria-labelledby="expense-details-title">
+      <div class="expense-details-content">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">DESPESAS DO MÊS</p>
+            <h2 id="expense-details-title">Despesas por tema</h2>
+            <p class="expense-details-month" id="expense-details-month"></p>
+          </div>
+          <button class="icon-button" id="close-expense-details" type="button" aria-label="Fechar detalhes das despesas">×</button>
+        </div>
+        <div id="expense-details-list" class="expense-details-list"></div>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="dismiss-expense-details" type="button">Fechar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="wallet-dialog" class="movement-dialog" aria-labelledby="wallet-dialog-title">
+      <form id="wallet-form" novalidate>
+        <div class="dialog-header">
+          <div><p class="eyebrow">CARTEIRA DE INVESTIMENTO</p><h2 id="wallet-dialog-title">Nova carteira</h2></div>
+          <button class="icon-button" id="close-wallet-dialog" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div class="dialog-fields">
+          <label class="field"><span>Nome da carteira</span><input name="name" type="text" maxlength="60" placeholder="Ex.: carteira de longo prazo" required></label>
+          <label class="field"><span>Banco, corretora ou plataforma (opcional)</span><input name="provider" type="text" maxlength="60" placeholder="Ex.: plataforma de investimento"></label>
+        </div>
+        <p class="form-error" id="wallet-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="cancel-wallet-dialog" type="button">Cancelar</button>
+          <button class="button button-primary" id="save-wallet" type="submit">Guardar carteira</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="position-dialog" class="movement-dialog" aria-labelledby="position-dialog-title">
+      <form id="position-form" novalidate>
+        <div class="dialog-header">
+          <div><p class="eyebrow">INVESTIMENTO ACOMPANHADO MANUALMENTE</p><h2 id="position-dialog-title">Nova posição</h2></div>
+          <button class="icon-button" id="close-position-dialog" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div class="dialog-fields">
+          <label class="field"><span>Carteira</span><select name="walletId" required></select></label>
+          <div class="field-row">
+            <label class="field"><span>Tipo de ativo</span><select name="assetType" required><option value="ETF">ETF</option><option value="Cripto">Cripto</option><option value="Ações">Ações</option><option value="Outro">Outro</option></select></label>
+            <label class="field"><span>Símbolo (opcional)</span><input name="symbol" type="text" maxlength="16" placeholder="Ex.: VWCE"></label>
+          </div>
+          <label class="field"><span>Nome do ativo</span><input name="name" type="text" maxlength="80" placeholder="Ex.: ETF global" required></label>
+          <label class="field"><span>Unidades detidas</span><input name="units" type="number" min="0.00000001" max="999999999" step="any" inputmode="decimal" placeholder="0,00000000" required></label>
+          <div class="field-row">
+            <label class="field"><span>Preço médio de compra (€ / unidade)</span><input name="averagePrice" type="number" min="0" max="999999999" step="0.00000001" inputmode="decimal" placeholder="0,00" required></label>
+            <label class="field"><span>Cotação atual (€ / unidade)</span><input name="currentPrice" type="number" min="0" max="999999999" step="0.00000001" inputmode="decimal" placeholder="0,00" required></label>
+          </div>
+          <p class="recurrence-hint">Introduza preços em euros ou atualize-os online para ações e ETFs com símbolo Yahoo Finance e para as principais criptomoedas suportadas.</p>
+        </div>
+        <p class="form-error" id="position-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="cancel-position-dialog" type="button">Cancelar</button>
+          <button class="button button-primary" id="save-position" type="submit">Guardar posição</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="statement-review-dialog" class="review-dialog" aria-labelledby="review-title">
+      <div class="review-content">
+        <div class="dialog-header">
+          <div><p class="eyebrow">ANÁLISE LOCAL · CONFIRMAÇÃO OBRIGATÓRIA</p><h2 id="review-title">Rever movimentos detetados</h2></div>
+          <button class="icon-button" id="close-review-dialog" type="button" aria-label="Fechar sem importar">×</button>
+        </div>
+        <p class="review-intro" id="review-intro"></p>
+        <p class="review-notice" id="review-notice"></p>
+        <div class="review-legend"><span class="review-flag confident">✓ Correspondência provável</span><span class="review-flag uncertain">! Verificar categoria e montante</span><span class="review-flag duplicate">≡ Possível duplicado — não selecionado</span></div>
+        <div class="review-selection-tools">
+          <button class="button button-secondary" id="toggle-all-reviewed" type="button" aria-pressed="false">Selecionar todos</button>
+          <span>A seleção de todos inclui possíveis duplicados após confirmação.</span>
+        </div>
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead><tr><th scope="col">Importar</th><th scope="col">Data</th><th scope="col">Descrição</th><th scope="col">Tipo e categoria sugeridos</th><th scope="col">Montante (€)</th><th scope="col">Análise</th></tr></thead>
+            <tbody id="review-list"></tbody>
+          </table>
+        </div>
+        <p class="review-count" id="review-count" aria-live="polite"></p>
+        <p class="review-count review-action-status" id="review-action-status" role="status" aria-live="polite"></p>
+        <p class="form-error" id="review-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="cancel-review" type="button">Cancelar importação</button>
+          <button class="button button-primary" id="confirm-import" type="button">Confirmar e importar 0 movimentos</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="statement-progress-dialog" class="progress-dialog" aria-labelledby="progress-title">
+      <div class="progress-content">
+        <p class="eyebrow">ANÁLISE NO SEU DISPOSITIVO</p>
+        <h2 id="progress-title">A ler o extrato</h2>
+        <p id="progress-status" aria-live="polite">O ficheiro não está a ser enviado. A analisar o conteúdo localmente…</p>
+        <div class="progress-track" role="progressbar" aria-label="Análise do extrato"><div class="progress-indicator"></div></div>
+        <button class="button button-secondary" id="cancel-analysis" type="button">Cancelar</button>
+      </div>
+    </dialog>
+
+    <div id="storage-warning" class="storage-warning" role="alert" hidden></div>
+  </body>
+</html>
